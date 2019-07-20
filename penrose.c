@@ -7,8 +7,8 @@
 
 #define INTEGERS 250000000
 #define NROUND 11.0
-#define SIZE 12000
-#define SHOW_NR false
+#define SIZE 500
+#define SHOW_NR true
 
 struct TRIANGLE {
 	int color;
@@ -155,11 +155,14 @@ void cairo(int nr) {
 	cairo_set_source_rgb(cr, 1, 1, 1);
 	cairo_fill(cr);
 
-	cairo_set_font_size(cr, cabs(triangles[0].B - triangles[0].A) / 10.0);
+	cairo_set_line_width(cr, cabs(triangles[0].B - triangles[0].A) / 20.0);
+	cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
+	cairo_set_font_size(cr, cabs(triangles[0].B - triangles[0].A) / 5.0);
 	cairo_set_source_rgb(cr, 0, 0, 0);
 
 	for(int i = 0; i < tcount; i++) {
 		if (integers[(i / 2) + 1]) {
+			cairo_set_source_rgb(cr, 0.5, 0, 0);
 			cairo_move_to(cr, creal(triangles[i].A), cimag(triangles[i].A));
 			cairo_line_to(cr, creal(triangles[i].B), cimag(triangles[i].B));
 			cairo_line_to(cr, creal(triangles[i].C), cimag(triangles[i].C));
@@ -169,11 +172,32 @@ void cairo(int nr) {
 				double complex D = (triangles[i].B + triangles[i].C) * 0.5;
 				cairo_move_to(cr, creal(D), cimag(D));
 				snprintf(nbuffer, sizeof(nbuffer) - 1, "%i", (i / 2) + 1);
-				cairo_set_source_rgb(cr, 1, 1, 1);
-				cairo_show_text(cr, nbuffer);
 				cairo_set_source_rgb(cr, 0, 0, 0);
+				cairo_show_text(cr, nbuffer);
 			}
 		}
+		else {
+			cairo_set_source_rgb(cr, 0, 0.5, 0);
+			cairo_move_to(cr, creal(triangles[i].A), cimag(triangles[i].A));
+			cairo_line_to(cr, creal(triangles[i].B), cimag(triangles[i].B));
+			cairo_line_to(cr, creal(triangles[i].C), cimag(triangles[i].C));
+			cairo_close_path(cr);
+			cairo_fill(cr);
+			if ((SHOW_NR) && (i % 2)){
+				double complex D = (triangles[i].B + triangles[i].C) * 0.5;
+				cairo_move_to(cr, creal(D), cimag(D));
+				snprintf(nbuffer, sizeof(nbuffer) - 1, "%i", (i / 2) + 1);
+				cairo_set_source_rgb(cr, 0, 0, 0);
+				cairo_show_text(cr, nbuffer);
+			}
+		}
+
+		cairo_move_to(cr, creal(triangles[i].C), cimag(triangles[i].C));
+		cairo_line_to(cr, creal(triangles[i].A), cimag(triangles[i].A));
+		cairo_line_to(cr, creal(triangles[i].B), cimag(triangles[i].B));
+		cairo_set_source_rgb(cr, 0.1, 0.1, 0.1);
+		cairo_stroke(cr);
+
 	}
 	fprintf(stderr, "DONE\n");
 
